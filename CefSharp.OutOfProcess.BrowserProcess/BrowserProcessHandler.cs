@@ -105,6 +105,8 @@ namespace CefSharp.OutOfProcess.BrowserProcess
 
         Task IOutOfProcessClientRpc.CreateBrowser(IntPtr parentHwnd, string url, int id)
         {
+            //Debugger.Break();
+
             return CefThread.ExecuteOnUiThread(() =>
             {
                 OutOfProcessChromiumWebBrowser browser;
@@ -133,7 +135,7 @@ namespace CefSharp.OutOfProcess.BrowserProcess
                 }
 
                 browser.CreateBrowser(windowInfo);
-                
+
                 _browsers.Add(browser);
 
                 return true;
