@@ -2,9 +2,9 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <UseWPF>true</UseWPF>
-    <TargetFrameworks>netcoreapp3.1;net462</TargetFrameworks>
-    <RootNamespace>CefSharp.OutOfProcess.Wpf.HwndHost.Example</RootNamespace>
-    <StartupObject>CefSharp.OutOfProcess.Wpf.HwndHost.Example.App</StartupObject>
+    <TargetFrameworks>net462</TargetFrameworks>
+    <RootNamespace>CefSharp.OutOfProcess.Wpf.OffscreenHost.Example</RootNamespace>
+    <StartupObject>CefSharp.OutOfProcess.Wpf.OffscreenHost.Example.App</StartupObject>
     <CefSharpAnyCpuSupport>true</CefSharpAnyCpuSupport>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -13,7 +13,7 @@
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CefSharp.OutOfProcess.Wpf.HwndHost\CefSharp.OutOfProcess.Wpf.HwndHost.csproj" />
+    <ProjectReference Include="..\CefSharp.OutOfProcess.Core\CefSharp.OutOfProcess.Core.csproj" />
+    <ProjectReference Include="..\CefSharp.OutOfProcess.Wpf.OffscreenHost\CefSharp.OutOfProcess.Wpf.OffscreenHost.csproj" />
   </ItemGroup>
-
 </Project>
