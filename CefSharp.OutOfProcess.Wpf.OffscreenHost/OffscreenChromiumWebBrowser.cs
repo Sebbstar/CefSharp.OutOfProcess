@@ -38,7 +38,7 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost
             "The undelying CefBrowser instance is not yet initialized. Use the IsBrowserInitializedChanged event and check " +
             "the IsBrowserInitialized property to determine when the browser has been initialized.";
 
-        private readonly Dictionary<string, string> KeyMapping = new Dictionary<string, string>() {
+        private readonly Dictionary<string, string> _keyMapping = new Dictionary<string, string>() {
             { "Left", "ArrowLeft" },
             { "Right", "ArrowRight" },
             { "Up", "ArrowUp" },
@@ -49,25 +49,21 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost
         /// <summary>
         /// The image that represents this browser instances
         /// </summary>
-        private Image image = new Image();
+        private readonly Image _image = new Image();
 
         /// <summary>
         /// The popup image
         /// </summary>
-        private Image popupImage = new Image();
+        private readonly Image _popupImage = new Image();
 
         private readonly OutOfProcessHost _host;
         private IntPtr _browserHwnd = IntPtr.Zero;
 
-        private OutOfProcessConnectionTransport _devToolsContextConnectionTransport;
-        private IDevToolsContext _devToolsContext;
-        private int _id;
+        private readonly OutOfProcessConnectionTransport _devToolsContextConnectionTransport;
+        private readonly IDevToolsContext _devToolsContext;
+        private readonly int _id;
         private bool _devToolsReady;
 
-        /// <summary>
-        /// Handle we'll use to host the browser
-        /// </summary>
-        private IntPtr _hwndHost;
         /// <summary>
         /// The ignore URI change
         /// </summary>
@@ -76,11 +72,7 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost
         /// Initial address
         /// </summary>
         private readonly string _initialAddress;
-        /// <summary>
-        /// Has the underlying Cef Browser been created (slightly different to initliazed in that
-        /// the browser is initialized in an async fashion)
-        /// </summary>
-        private bool _browserCreated;
+
         /// <summary>
         /// The browser initialized - boolean represented as 0 (false) and 1(true) as we use Interlocker to increment/reset
         /// </summary>
@@ -91,11 +83,6 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost
         /// or in the process of getting disposed
         /// </summary>
         private int _disposeSignaled;
-
-        /// <summary>
-        /// Current DPI Scale
-        /// </summary>
-        private double _dpiScale;
 
         /// <summary>
         /// The HwndSource RootVisual (Window) - We store a reference
@@ -112,17 +99,14 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost
         private DirectWritableBitmapRenderHandler _popupRenderHandler;
         private WindowState _previousWindowState;
 
+        private Rect _popupRect;
+        private bool _showPopup;
+
         /// <summary>
         /// Gets a value indicating whether this instance is disposed.
         /// </summary>
         /// <value><see langword="true" /> if this instance is disposed; otherwise, <see langword="false" />.</value>
-        public bool IsDisposed
-        {
-            get
-            {
-                return Interlocked.CompareExchange(ref _disposeSignaled, 1, 1) == 1;
-            }
-        }
+        public bool IsDisposed => Interlocked.CompareExchange(ref _disposeSignaled, 1, 1) == 1;
 
         /// <inheritdoc/>
         public event EventHandler DOMContentLoaded;
@@ -191,99 +175,26 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost
         /// browser state.
         /// </summary>
         /// <value>The back command.</value>
-        public ICommand BackCommand { get; private set; }
+        public ICommand BackCommand { get; }
 
         /// <summary>
         /// Navigates to the next page in the browser history. Will automatically be enabled/disabled depending on the
         /// browser state.
         /// </summary>
         /// <value>The forward command.</value>
-        public ICommand ForwardCommand { get; private set; }
+        public ICommand ForwardCommand { get; }
 
         /// <summary>
         /// Reloads the content of the current page. Will automatically be enabled/disabled depending on the browser state.
         /// </summary>
         /// <value>The reload command.</value>
-        public ICommand ReloadCommand { get; private set; }
-
-        /// <summary>
-        /// Prints the current browser contents.
-        /// </summary>
-        /// <value>The print command.</value>
-        public ICommand PrintCommand { get; private set; }
-
-        /// <summary>
-        /// Increases the zoom level.
-        /// </summary>
-        /// <value>The zoom in command.</value>
-        public ICommand ZoomInCommand { get; private set; }
-
-        /// <summary>
-        /// Decreases the zoom level.
-        /// </summary>
-        /// <value>The zoom out command.</value>
-        public ICommand ZoomOutCommand { get; private set; }
-
-        /// <summary>
-        /// Resets the zoom level to the default. (100%)
-        /// </summary>
-        /// <value>The zoom reset command.</value>
-        public ICommand ZoomResetCommand { get; private set; }
-
-        /// <summary>
-        /// Opens up a new program window (using the default text editor) where the source code of the currently displayed web
-        /// page is shown.
-        /// </summary>
-        /// <value>The view source command.</value>
-        public ICommand ViewSourceCommand { get; private set; }
+        public ICommand ReloadCommand { get; }
 
         /// <summary>
         /// Command which cleans up the Resources used by the ChromiumWebBrowser
         /// </summary>
         /// <value>The cleanup command.</value>
-        public ICommand CleanupCommand { get; private set; }
-
-        /// <summary>
-        /// Stops loading the current page.
-        /// </summary>
-        /// <value>The stop command.</value>
-        public ICommand StopCommand { get; private set; }
-
-        /// <summary>
-        /// Cut selected text to the clipboard.
-        /// </summary>
-        /// <value>The cut command.</value>
-        public ICommand CutCommand { get; private set; }
-
-        /// <summary>
-        /// Copy selected text to the clipboard.
-        /// </summary>
-        /// <value>The copy command.</value>
-        public ICommand CopyCommand { get; private set; }
-
-        /// <summary>
-        /// Paste text from the clipboard.
-        /// </summary>
-        /// <value>The paste command.</value>
-        public ICommand PasteCommand { get; private set; }
-
-        /// <summary>
-        /// Select all text.
-        /// </summary>
-        /// <value>The select all command.</value>
-        public ICommand SelectAllCommand { get; private set; }
-
-        /// <summary>
-        /// Undo last action.
-        /// </summary>
-        /// <value>The undo command.</value>
-        public ICommand UndoCommand { get; private set; }
-
-        /// <summary>
-        /// Redo last action.
-        /// </summary>
-        /// <value>The redo command.</value>
-        public ICommand RedoCommand { get; private set; }
+        public ICommand CleanupCommand { get; }
 
         private static readonly DependencyPropertyKey sTitlePropertyKey;
         public static readonly DependencyProperty TitleProperty;
@@ -301,19 +212,12 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost
 
         public OffscreenChromiumWebBrowser(OutOfProcessHost host, string initialAddress = null)
         {
-            if (host == null)
-            {
-                throw new ArgumentNullException(nameof(host));
-            }
-
-            _host = host;
+            _host = host ?? throw new ArgumentNullException(nameof(host));
             _initialAddress = initialAddress;
 
             Focusable = true;
             FocusVisualStyle = null;
             IsTabStop = true;
-
-            // WebBrowser = this;
 
             SizeChanged += OnSizeChanged;
             IsVisibleChanged += OnIsVisibleChanged;
@@ -321,32 +225,21 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost
             BackCommand = new DelegateCommand(() => _devToolsContext.GoBackAsync(), () => CanGoBack);
             ForwardCommand = new DelegateCommand(() => _devToolsContext.GoForwardAsync(), () => CanGoForward);
             ReloadCommand = new DelegateCommand(() => _devToolsContext.ReloadAsync(), () => !IsLoading);
-            //PrintCommand = new DelegateCommand(this.Print);
-            //ZoomInCommand = new DelegateCommand(ZoomIn);
-            //ZoomOutCommand = new DelegateCommand(ZoomOut);
-            //ZoomResetCommand = new DelegateCommand(ZoomReset);
-            //ViewSourceCommand = new DelegateCommand(this.ViewSource);
             CleanupCommand = new DelegateCommand(Dispose);
-            //StopCommand = new DelegateCommand(this.Stop);
-            //CutCommand = new DelegateCommand(this.Cut);
-            //CopyCommand = new DelegateCommand(this.Copy);
-            //PasteCommand = new DelegateCommand(this.Paste);
-            //SelectAllCommand = new DelegateCommand(this.SelectAll);
-            //UndoCommand = new DelegateCommand(this.Undo);
-            //RedoCommand = new DelegateCommand(this.Redo);
 
             PresentationSource.AddSourceChangedHandler(this, PresentationSourceChangedHandler);
 
             UseLayoutRounding = true;
 
-            _hwndHost = new WindowInteropHelper(Application.Current.MainWindow).Handle;
+            var hwndHost = new WindowInteropHelper(Application.Current.MainWindow).Handle;
 
-            _host.CreateBrowser(this, _hwndHost, url: _initialAddress, out _id);
+            _host.CreateBrowser(this, hwndHost, url: _initialAddress, out _id);
             _devToolsContextConnectionTransport = new OutOfProcessConnectionTransport(_id, _host);
 
             var connection = DevToolsConnection.Attach(_devToolsContextConnectionTransport);
             _devToolsContext = Dom.DevToolsContext.CreateForOutOfProcess(connection);
         }
+
         protected void ShowDevTools() => _host.ShowDevTools(_id);
 
         /// <inheritdoc/>
@@ -355,18 +248,7 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost
         /// <summary>
         /// DevToolsContext - provides communication with the underlying browser
         /// </summary>
-        public IDevToolsContext DevToolsContext
-        {
-            get
-            {
-                if (_devToolsReady)
-                {
-                    return _devToolsContext;
-                }
-
-                return default;
-            }
-        }
+        public IDevToolsContext DevToolsContext => _devToolsReady ? _devToolsContext : default;
 
         /// <inheritdoc/>
         public bool IsBrowserInitialized => _browserHwnd != IntPtr.Zero;
@@ -414,41 +296,23 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost
         /// <inheritdoc/>
         public async void LoadUrl(string url)
         {
-            // TODO: (CEF) sporadic crash
-            try
-            {
-                // TODO: (CEF) _ = await _devToolsContext.GoToAsync(url);
-                // _ = await _devToolsContext.GoToAsync(url);
-                await _host.LoadUrl(_id, url);
-            }
-            catch (Exception ex)
-            {
-                ;
-                // TODO: (CEF) frame sporadically not available. Probably race condition
-            }
+            await _host.LoadUrl(_id, url);
         }
 
         /// <inheritdoc/>
-        public Task<Response> LoadUrlAsync(string url, int? timeout = null, WaitUntilNavigation[] waitUntil = null)
-        {
-            return _devToolsContext.GoToAsync(url, timeout, waitUntil);
-        }
+        public Task<Response> LoadUrlAsync(string url, int? timeout = null, WaitUntilNavigation[] waitUntil = null) 
+            => _devToolsContext.GoToAsync(url, timeout, waitUntil);
 
         /// <inheritdoc/>
-        public Task<Response> GoBackAsync(NavigationOptions options = null)
-        {
-            return _devToolsContext.GoBackAsync(options);
-        }
+        public Task<Response> GoBackAsync(NavigationOptions options = null) 
+            => _devToolsContext.GoBackAsync(options);
 
         /// <inheritdoc/>
-        public Task<Response> GoForwardAsync(NavigationOptions options = null)
-        {
-            return _devToolsContext.GoForwardAsync(options);
-        }
+        public Task<Response> GoForwardAsync(NavigationOptions options = null) 
+            => _devToolsContext.GoForwardAsync(options);
 
         protected virtual void OnInitializeDevToolsContext(IDevToolsContext context)
         {
-
         }
 
         private void PresentationSourceChangedHandler(object sender, SourceChangedEventArgs args)
@@ -459,10 +323,7 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost
 
                 var matrix = source.CompositionTarget.TransformToDevice;
 
-                _dpiScale = matrix.M11;
-
-                var window = source.RootVisual as Window;
-                if (window != null)
+                if (source.RootVisual is Window window)
                 {
                     window.StateChanged += OnWindowStateChanged;
                     window.LocationChanged += OnWindowLocationChanged;
@@ -482,10 +343,9 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost
                     }
                 }
             }
-            else if (args.OldSource != null)
+            else
             {
-                var window = args.OldSource.RootVisual as Window;
-                if (window != null)
+                if (args.OldSource?.RootVisual is Window window)
                 {
                     window.StateChanged -= OnWindowStateChanged;
                     window.LocationChanged -= OnWindowLocationChanged;
@@ -497,8 +357,6 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost
         ///<inheritdoc/>
         protected override void OnDpiChanged(DpiScale oldDpi, DpiScale newDpi)
         {
-            _dpiScale = newDpi.DpiScaleX;
-
             //If the DPI changed then we need to resize.
             ResizeBrowser((int)ActualWidth, (int)ActualHeight);
 
@@ -666,10 +524,7 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost
         /// <value><c>true</c> if this instance can go back; otherwise, <c>false</c>.</value>
         /// <remarks>In the WPF control, this property is implemented as a Dependency Property and fully supports data
         /// binding.</remarks>
-        public bool CanGoBack
-        {
-            get { return (bool)GetValue(CanGoBackProperty); }
-        }
+        public bool CanGoBack => (bool)GetValue(CanGoBackProperty);
 
         /// <summary>
         /// The can go back property
@@ -682,10 +537,7 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost
         /// <value><c>true</c> if this instance can go forward; otherwise, <c>false</c>.</value>
         /// <remarks>In the WPF control, this property is implemented as a Dependency Property and fully supports data
         /// binding.</remarks>
-        public bool CanGoForward
-        {
-            get { return (bool)GetValue(CanGoForwardProperty); }
-        }
+        public bool CanGoForward => (bool)GetValue(CanGoForwardProperty);
 
         /// <summary>
         /// The can go forward property
@@ -701,8 +553,8 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost
         /// binding.</remarks>
         public string Address
         {
-            get { return (string)GetValue(AddressProperty); }
-            set { SetValue(AddressProperty, value); }
+            get => (string)GetValue(AddressProperty);
+            set => SetValue(AddressProperty, value);
         }
 
         /// <summary>
@@ -733,15 +585,9 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost
         /// <param name="newValue">The new value.</param>
         protected virtual void OnAddressChanged(string oldValue, string newValue)
         {
-            ////TODO (CEF): Check 
             if (_ignoreUriChange || newValue == null || !InternalIsBrowserInitialized())
             {
                 return;
-            }
-
-            if (_devToolsContext.MainFrame == null)
-            {
-                //  return;
             }
 
             LoadUrl(newValue);
@@ -753,10 +599,7 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost
         /// <value><c>true</c> if this instance is loading; otherwise, <c>false</c>.</value>
         /// <remarks>In the WPF control, this property is implemented as a Dependency Property and fully supports data
         /// binding.</remarks>
-        public bool IsLoading
-        {
-            get { return (bool)GetValue(IsLoadingProperty); }
-        }
+        public bool IsLoading => (bool)GetValue(IsLoadingProperty);
 
         /// <summary>
         /// The is loading property
@@ -792,8 +635,8 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost
         /// <value>The cleanup element.</value>
         public FrameworkElement CleanupElement
         {
-            get { return (FrameworkElement)GetValue(CleanupElementProperty); }
-            set { SetValue(CleanupElementProperty, value); }
+            get => (FrameworkElement)GetValue(CleanupElementProperty);
+            set => SetValue(CleanupElementProperty, value);
         }
 
         Dom.Frame[] IChromiumWebBrowser.Frames => throw new NotImplementedException();
@@ -888,7 +731,7 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost
         }
 
         /// <summary>
-        /// Check is browserisinitialized
+        /// Check is <see cref="_browserInitialized"/>
         /// </summary>
         /// <returns>true if browser is initialized</returns>
         private bool InternalIsBrowserInitialized()
@@ -1004,17 +847,9 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost
             }
         }
 
-        private void Dispose()
-        {
-            // TODO: (CEF)
-            Dispose(true);
-        }
+        private void Dispose() => Dispose(true);
 
-        void IDisposable.Dispose()
-        {
-            Dispose(true);
-            // TODO: (CEF)
-        }
+        void IDisposable.Dispose() => Dispose(true);
 
         protected virtual void Dispose(bool isDisposing)
         {
@@ -1023,8 +858,8 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost
 
         void IRenderHandlerInternal.OnPaint(bool isPopup, Interface.Rect directRect, int width, int height, string file)
         {
-            const int DefaultDpi = 96;
-            var scale = DefaultDpi * 1.0;
+            const int defaultDpi = 96;
+            const double scale = defaultDpi * 1.0;
             if (_renderHandler == null && !IsDisposed)
             {
                 _renderHandler = new DirectWritableBitmapRenderHandler(scale, scale);
@@ -1035,42 +870,38 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost
             {
                 if (isPopup)
                 {
-                    _popupRenderHandler?.OnPaint(directRect, width, height, popupImage, file);
+                    _popupRenderHandler?.OnPaint(directRect, width, height, _popupImage, file);
                 }
                 else
                 {
-                    _renderHandler?.OnPaint(directRect, width, height, image, file);
+                    _renderHandler?.OnPaint(directRect, width, height, _image, file);
                 }
 
                 InvalidateVisual();
             }, DispatcherPriority.Render);
         }
 
-        private bool showPopup;
-
         void IRenderHandlerInternal.OnPopupShow(bool show)
         {
-            showPopup = show;
+            _showPopup = show;
         }
 
         void IRenderHandlerInternal.OnPopupSize(Interface.Rect rect)
         {
-            popupRect = new Rect(rect.X, rect.Y, rect.Width, rect.Height);
+            _popupRect = new Rect(rect.X, rect.Y, rect.Width, rect.Height);
         }
-
-        private Rect popupRect;
 
         protected override void OnRender(DrawingContext drawingContext)
         {
             base.OnRender(drawingContext);
-            if (image != null && image.Source != null)
+            if (_image?.Source != null)
             {
-                drawingContext.DrawImage(image.Source, new Rect(0, 0, (int)image.Source.Width, (int)image.Source.Height));
+                drawingContext.DrawImage(_image.Source, new Rect(0, 0, (int)_image.Source.Width, (int)_image.Source.Height));
             }
 
-            if (showPopup && popupImage != null && image.Source != null)
+            if (_showPopup && _popupImage != null && _image?.Source != null)
             {
-                drawingContext.DrawImage(popupImage.Source, popupRect);
+                drawingContext.DrawImage(_popupImage.Source, _popupRect);
             }
         }
 
@@ -1110,7 +941,7 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost
         /// </summary>
         /// <param name="e">The <see cref="T:System.Windows.Input.MouseButtonEventArgs" /> that contains the event data.
         /// This event data reports details about the mouse button that was pressed and the handled state.</param>
-        protected async override void OnMouseDown(MouseButtonEventArgs e)
+        protected override void OnMouseDown(MouseButtonEventArgs e)
         {
             if (DevToolsContext == null)
             {
@@ -1147,7 +978,7 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost
         /// Invoked when an unhandled <see cref="E:System.Windows.Input.Mouse.MouseUp" /> routed event reaches an element in its route that is derived from this class. Implement this method to add class handling for this event.
         /// </summary>
         /// <param name="e">The <see cref="T:System.Windows.Input.MouseButtonEventArgs" /> that contains the event data. The event data reports that the mouse button was released.</param>
-        protected override async void OnMouseUp(MouseButtonEventArgs e)
+        protected override void OnMouseUp(MouseButtonEventArgs e)
         {
             if (DevToolsContext == null)
             {
@@ -1220,21 +1051,6 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost
         /// <param name="e">The <see cref="DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
         private static void OnTitleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((OffscreenChromiumWebBrowser)d).TitleChanged?.Invoke(d, e);
 
-        /////// <summary>
-        /////// Called when the IME composition range has changed.
-        /////// </summary>
-        /////// <param name="selectedRange">is the range of characters that have been selected</param>
-        /////// <param name="characterBounds">is the bounds of each character in view coordinates.</param>
-        ////protected virtual void OnImeCompositionRangeChanged(Range selectedRange, Rect[] characterBounds)
-        ////{
-        ////    //// TODO: (CEF)
-        ////    ////var imeKeyboardHandler = WpfKeyboardHandler as WpfImeKeyboardHandler;
-        ////    ////if (imeKeyboardHandler != null)
-        ////    ////{
-        ////    ////    imeKeyboardHandler.ChangeCompositionRange(selectedRange, characterBounds);
-        ////    ////}
-        ////}
-
         /// <summary>
         /// Invoked when an unhandled <see cref="E:System.Windows.Input.Keyboard.PreviewKeyDown" /> attached event reaches an
         /// element in its route that is derived from this class. Implement this method to add class handling for this event.
@@ -1298,16 +1114,18 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost
                 e.Handled = true;
             }
 
-            if (KeyMapping.ContainsKey(e.Key.ToString()))
+            if (!_keyMapping.ContainsKey(e.Key.ToString()))
             {
-                if (e.IsDown)
-                {
-                    DevToolsContext.Keyboard.DownAsync(KeyMapping[e.Key.ToString()]);
-                }
-                else
-                {
-                    DevToolsContext.Keyboard.UpAsync(KeyMapping[e.Key.ToString()]);
-                }
+                return;
+            }
+
+            if (e.IsDown)
+            {
+                DevToolsContext.Keyboard.DownAsync(_keyMapping[e.Key.ToString()]);
+            }
+            else
+            {
+                DevToolsContext.Keyboard.UpAsync(_keyMapping[e.Key.ToString()]);
             }
         }
 
@@ -1337,25 +1155,26 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost
         /// <param name="e">The <see cref="MouseButtonEventArgs"/> instance containing the event data.</param>
         private void OnMouseButton(MouseButtonEventArgs e)
         {
-            if (!e.Handled && _devToolsReady)
+            if (e.Handled || !_devToolsReady)
             {
-                var mouseUp = e.ButtonState == MouseButtonState.Released;
-                var point = e.GetPosition(this);
-
-                //// Chromium only supports values of 1, 2 or 3.
-                //// https://github.com/cefsharp/CefSharp/issues/3940
-                //// Anything greater than 3 then we send click count of 1
-                var clickCount = e.ClickCount;
-
-                if (clickCount > 3)
-                {
-                    clickCount = 1;
-                }
-
-                _host.SendMouseClickEvent(_id, (int)point.X, (int)point.Y, (MouseButtonType)e.ChangedButton, mouseUp, clickCount, e.GetModifiers());
-
-                e.Handled = true;
+                return;
             }
+
+            var mouseUp = e.ButtonState == MouseButtonState.Released;
+            var point = e.GetPosition(this);
+
+            //// Chromium only supports values of 1, 2 or 3.
+            //// https://github.com/cefsharp/CefSharp/issues/3940
+            //// Anything greater than 3 then we send click count of 1
+            var clickCount = e.ClickCount;
+            if (clickCount > 3)
+            {
+                clickCount = 1;
+            }
+
+            _host.SendMouseClickEvent(_id, (int)point.X, (int)point.Y, (MouseButtonType)e.ChangedButton, mouseUp, clickCount, e.GetModifiers());
+
+            e.Handled = true;
         }
 
         #endregion

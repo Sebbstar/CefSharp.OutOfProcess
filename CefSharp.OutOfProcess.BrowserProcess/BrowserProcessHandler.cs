@@ -14,7 +14,7 @@ namespace CefSharp.OutOfProcess.BrowserProcess
     {
         private readonly int _parentProcessId;
         private readonly bool _offscreenRendering;
-        private IList<OutOfProcessChromiumWebBrowser> _browsers = new List<OutOfProcessChromiumWebBrowser>();
+        private readonly IList<OutOfProcessChromiumWebBrowser> _browsers = new List<OutOfProcessChromiumWebBrowser>();
         /// <summary>
         /// JSON RPC used for IPC with host
         /// </summary>
@@ -155,11 +155,8 @@ namespace CefSharp.OutOfProcess.BrowserProcess
 
             if (_offscreenRendering && browser is OffscreenOutOfProcessChromiumWebBrowser offscreenBrowser)
             {
-                offscreenBrowser.browserLocation = new System.Drawing.Point(rect.X, rect.Y);
                 host.NotifyMoveOrResizeStarted();
-
-                offscreenBrowser.viewRect = new Structs.Rect(0, 0, rect.Width, rect.Height);
-
+                offscreenBrowser.ViewRect = new Structs.Rect(rect.X, rect.Y, rect.Width, rect.Height);
                 host.WasResized();
             }
         }

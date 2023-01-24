@@ -4,7 +4,7 @@ using CefSharp.OutOfProcess.Interface;
 using CefSharp.Wpf.Internals;
 using CefSharp.Structs;
 using CefSharp.Enums;
-
+  
 namespace CefSharp.OutOfProcess.BrowserProcess
 {
     /// <summary>
@@ -34,9 +34,7 @@ namespace CefSharp.OutOfProcess.BrowserProcess
         /// </summary>
         public float DpiScaleFactor { get; set; } = 1;
 
-        public System.Drawing.Point browserLocation { get; internal set; }
-
-        public CefSharp.Structs.Rect viewRect { get; internal set; }
+        internal CefSharp.Structs.Rect ViewRect { get; set; }
 
         /// <summary>
         /// Gets the ScreenInfo - currently used to get the DPI scale factor.
@@ -69,12 +67,12 @@ namespace CefSharp.OutOfProcess.BrowserProcess
             return screenInfo;
         }
 
-        Structs.Rect IRenderWebBrowser.GetViewRect() => viewRect;
+        Structs.Rect IRenderWebBrowser.GetViewRect() => ViewRect;
 
         bool IRenderWebBrowser.GetScreenPoint(int viewX, int viewY, out int screenX, out int screenY)
         {
-            screenX = browserLocation.X;
-            screenY = browserLocation.Y;
+            screenX = ViewRect.X + viewX;
+            screenY = ViewRect.Y + viewY;
 
             return true;
         }
@@ -96,18 +94,18 @@ namespace CefSharp.OutOfProcess.BrowserProcess
 
         void IRenderWebBrowser.OnCursorChange(IntPtr cursor, CursorType type, CursorInfo customCursorInfo)
         {
-            // TODO: (CEF)
+            // not implemented
         }
 
         bool IRenderWebBrowser.StartDragging(IDragData dragData, DragOperationsMask mask, int x, int y)
         {
-            // TODO: (CEF)
+            // not implemented
             return false;
         }
 
         void IRenderWebBrowser.UpdateDragCursor(DragOperationsMask operation)
         {
-            // TODO: (CEF)
+            // not implemented
         }
 
         void IRenderWebBrowser.OnPopupShow(bool show) => _outofProcessHostRpc.NotifyPopupShow(Id, show);
@@ -121,7 +119,7 @@ namespace CefSharp.OutOfProcess.BrowserProcess
 
         void IRenderWebBrowser.OnVirtualKeyboardRequested(IBrowser browser, TextInputMode inputMode)
         {
-            //throw new NotImplementedException();
+            // not implemented
         }
     }
 }
