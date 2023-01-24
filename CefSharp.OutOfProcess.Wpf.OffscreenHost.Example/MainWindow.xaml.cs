@@ -18,7 +18,7 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost.Example
         #if NETCOREAPP3_1_OR_GREATER
         private string _targetFramework = "netcoreapp3.1";
         #else
-        private string _targetFramework = "net472";
+        private string _targetFramework = "net462";
         #endif
 
         private OutOfProcessHost _outOfProcessHost;
@@ -46,7 +46,7 @@ namespace CefSharp.OutOfProcess.Wpf.OffscreenHost.Example
 
         private void ShowDevToolsClick(object sender, RoutedEventArgs e)
         {
-            ;
+            
         }
     }
 }

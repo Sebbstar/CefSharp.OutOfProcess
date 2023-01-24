@@ -110,9 +110,9 @@ namespace CefSharp.OutOfProcess.BrowserProcess
             // TODO: (CEF)
         }
 
-        void IRenderWebBrowser.OnPopupShow(bool show) => _outofProcessHostRpc.OnPopupShow(Id, show);
+        void IRenderWebBrowser.OnPopupShow(bool show) => _outofProcessHostRpc.NotifyPopupShow(Id, show);
 
-        void IRenderWebBrowser.OnPopupSize(CefSharp.Structs.Rect rect) => _outofProcessHostRpc.OnPopupSize(Id, new Interface.Rect(rect.X, rect.Y, rect.Width, rect.Height));
+        void IRenderWebBrowser.OnPopupSize(CefSharp.Structs.Rect rect) => _outofProcessHostRpc.NotifyPopupSize(Id, new Interface.Rect(rect.X, rect.Y, rect.Width, rect.Height));
 
         void IRenderWebBrowser.OnImeCompositionRangeChanged(Structs.Range selectedRange, CefSharp.Structs.Rect[] characterBounds)
         {
