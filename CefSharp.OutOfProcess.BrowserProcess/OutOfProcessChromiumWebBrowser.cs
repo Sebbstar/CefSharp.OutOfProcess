@@ -34,7 +34,7 @@ namespace CefSharp.OutOfProcess.BrowserProcess
         /// <summary>
         /// Internal ID used for tracking browsers between Processes;
         /// </summary>
-        private protected readonly int _id;
+        private readonly int _id;
 
         /// <summary>
         /// The managed cef browser adapter
@@ -44,7 +44,7 @@ namespace CefSharp.OutOfProcess.BrowserProcess
         /// <summary>
         /// JSON RPC used for IPC with host
         /// </summary>
-        private protected readonly IOutOfProcessHostRpc _outofProcessHostRpc;
+        private readonly IOutOfProcessHostRpc _outofProcessHostRpc;
 
         /// <summary>
         /// Flag to guard the creation of the underlying browser - only one instance can be created
@@ -175,6 +175,11 @@ namespace CefSharp.OutOfProcess.BrowserProcess
         /// </summary>
         /// <value>The resource handler factory.</value>
         public IResourceRequestHandlerFactory ResourceRequestHandlerFactory { get; set; }
+
+        /// <summary>
+        /// Gets the out of process host.
+        /// </summary>
+        private protected IOutOfProcessHostRpc OutofProcessHostRpc => _outofProcessHostRpc;
 
         /// <summary>
         /// Event handler that will get called when the resource load for a navigation fails or is canceled.

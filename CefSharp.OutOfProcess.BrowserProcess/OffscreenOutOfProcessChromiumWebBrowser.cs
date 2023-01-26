@@ -1,7 +1,6 @@
 using CefSharp.Internals;
 using System;
 using CefSharp.OutOfProcess.Interface;
-using CefSharp.Wpf.Internals;
 using CefSharp.Structs;
 using CefSharp.Enums;
   
@@ -18,8 +17,8 @@ namespace CefSharp.OutOfProcess.BrowserProcess
         public OffscreenOutOfProcessChromiumWebBrowser(IOutOfProcessHostRpc outOfProcessServer, int id, string address = "", IRequestContext requestContext = null)
           : base(outOfProcessServer, id, address, requestContext, true)
         {
-            renderHandler = new RenderHandler($"0render_{_id}_");
-            popupRenderHandler = new RenderHandler($"0render_{_id}_popup_");
+            renderHandler = new RenderHandler($"0render_{Id}_");
+            popupRenderHandler = new RenderHandler($"0render_{Id}_popup_");
         }
 
         /// <summary>
@@ -84,7 +83,7 @@ namespace CefSharp.OutOfProcess.BrowserProcess
                 ? popupRenderHandler.OnPaint(buffer, width, height)
                 : renderHandler.OnPaint(buffer, width, height);
 
-            _outofProcessHostRpc.NotifyPaint(Id, type == PaintElementType.Popup, dirtyRectCopy, width, height, file);
+            OutofProcessHostRpc.NotifyPaint(Id, type == PaintElementType.Popup, dirtyRectCopy, width, height, file);
         }
 
         void IRenderWebBrowser.OnCursorChange(IntPtr cursor, CursorType type, CursorInfo customCursorInfo)
@@ -103,9 +102,9 @@ namespace CefSharp.OutOfProcess.BrowserProcess
             // not implemented
         }
 
-        void IRenderWebBrowser.OnPopupShow(bool show) => _outofProcessHostRpc.NotifyPopupShow(Id, show);
+        void IRenderWebBrowser.OnPopupShow(bool show) => OutofProcessHostRpc.NotifyPopupShow(Id, show);
 
-        void IRenderWebBrowser.OnPopupSize(CefSharp.Structs.Rect rect) => _outofProcessHostRpc.NotifyPopupSize(Id, new Interface.Rect(rect.X, rect.Y, rect.Width, rect.Height));
+        void IRenderWebBrowser.OnPopupSize(CefSharp.Structs.Rect rect) => OutofProcessHostRpc.NotifyPopupSize(Id, new Interface.Rect(rect.X, rect.Y, rect.Width, rect.Height));
 
         void IRenderWebBrowser.OnImeCompositionRangeChanged(Structs.Range selectedRange, CefSharp.Structs.Rect[] characterBounds)
         {
