@@ -15,11 +15,6 @@ namespace CefSharp.OutOfProcess.BrowserProcess
         private readonly RenderHandler renderHandler;
         private readonly RenderHandler popupRenderHandler;
 
-        /// <summary>
-        /// The MonitorInfo based on the current hwnd
-        /// </summary>
-        private MonitorInfoEx monitorInfo;
-
         public OffscreenOutOfProcessChromiumWebBrowser(IOutOfProcessHostRpc outOfProcessServer, int id, string address = "", IRequestContext requestContext = null)
           : base(outOfProcessServer, id, address, requestContext, true)
         {
@@ -48,8 +43,8 @@ namespace CefSharp.OutOfProcess.BrowserProcess
         /// <returns>ScreenInfo containing the current DPI scale factor</returns>
         protected virtual ScreenInfo? GetScreenInfo()
         {
-            CefSharp.Structs.Rect rect = monitorInfo.Monitor;
-            CefSharp.Structs.Rect availableRect = monitorInfo.WorkArea;
+            CefSharp.Structs.Rect rect;
+            CefSharp.Structs.Rect availableRect;
 
             if (DpiScaleFactor > 1.0)
             {

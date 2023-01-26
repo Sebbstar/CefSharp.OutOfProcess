@@ -30,17 +30,11 @@ namespace CefSharp.OutOfProcess.BrowserProcess
                 MultiThreadedMessageLoop = false
             };
 
-            //// // too slow when webgl is used
-            ////if (offscreenRendering)
-            ////{
-            ////    settings.SetOffScreenRenderingBestPerformanceArgs();
-            ////}
-
             var browserProcessHandler = new BrowserProcessHandler(parentProcessId, offscreenRendering);
 
             Cef.EnableWaitForBrowsersToClose();
 
-            var success = Cef.Initialize(settings, performDependencyCheck: true, browserProcessHandler: browserProcessHandler);
+            var success = Cef.Initialize(settings, performDependencyCheck:true, browserProcessHandler: browserProcessHandler);
 
             if(!success)
             {
