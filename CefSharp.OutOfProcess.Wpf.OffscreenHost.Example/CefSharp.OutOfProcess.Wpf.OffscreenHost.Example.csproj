@@ -2,7 +2,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <UseWPF>true</UseWPF>
-    <TargetFrameworks>net462</TargetFrameworks>
+	<TargetFrameworks>netcoreapp3.1;net462</TargetFrameworks>
     <RootNamespace>CefSharp.OutOfProcess.Wpf.OffscreenHost.Example</RootNamespace>
     <StartupObject>CefSharp.OutOfProcess.Wpf.OffscreenHost.Example.App</StartupObject>
     <CefSharpAnyCpuSupport>true</CefSharpAnyCpuSupport>
