@@ -5,8 +5,7 @@
 	<TargetFrameworks>netcoreapp3.1;net462</TargetFrameworks>
     <RootNamespace>CefSharp.OutOfProcess.Wpf.OffscreenHost.Example</RootNamespace>
     <StartupObject>CefSharp.OutOfProcess.Wpf.OffscreenHost.Example.App</StartupObject>
-    <CefSharpAnyCpuSupport>true</CefSharpAnyCpuSupport>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+	  <PlatformTarget>AnyCPU</PlatformTarget>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
