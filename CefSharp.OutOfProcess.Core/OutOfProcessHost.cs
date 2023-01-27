@@ -42,6 +42,8 @@ namespace CefSharp.OutOfProcess
 
         public event EventHandler<BeforeDownloadCallbackDetails> BeforeDownloadCallback;
 
+        public event EventHandler<JsDialogCallbackDetails> JsDialogCallback;
+
 
         /// <summary>
         /// UI Thread assocuated with this <see cref="OutOfProcessHost"/>
@@ -287,5 +289,43 @@ namespace CefSharp.OutOfProcess
         internal void InvokeBeforeDownloadCallback(BeforeDownloadCallbackDetails callbackDetails) => BeforeDownloadCallback.Invoke(this, callbackDetails);
 
         internal void InvokeDownloadCallback(DownloadCallbackDetails callbackDetails) => DownloadCallback.Invoke(this, callbackDetails);
+
+        internal void InvokeJsDialogCallback(JsDialogCallbackDetails callbackDetails) => JsDialogCallback.Invoke(this, callbackDetails);
+
+        public bool OnBeforeUnloadDialog(int browserId, string messageText, bool isReload, int callback)
+        {
+            if (GetBrowser(browserId) is IChromiumWebBrowserInternal chromiumWebBrowser)
+            {
+                return chromiumWebBrowser?.JsDialogHandler?.OnBeforeUnloadDialog(chromiumWebBrowser, messageText, isReload, new JsDialogCallbackProxy(this, callback, chromiumWebBrowser)) ?? false;
+            }
+
+            return false;
+        }
+
+        public void OnDialogClosed(int browserId)
+        {
+            if (GetBrowser(browserId) is IChromiumWebBrowserInternal chromiumWebBrowser)
+            {
+                chromiumWebBrowser?.JsDialogHandler?.OnDialogClosed(chromiumWebBrowser);
+            }
+        }
+
+        public bool OnJSDialog(int browserId, string originUrl, CefJsDialogType dialogType, string messageText, string defaultPromptText, int callback, ref bool suppressMessage)
+        {
+            if (GetBrowser(browserId) is IChromiumWebBrowserInternal chromiumWebBrowser)
+            {
+                return chromiumWebBrowser?.JsDialogHandler?.OnJSDialog(chromiumWebBrowser,originUrl, dialogType, messageText,defaultPromptText,new JsDialogCallbackProxy(this, callback,chromiumWebBrowser), ref suppressMessage) ?? false;
+            }
+
+            return false;
+        }
+
+        public void OnResetDialogState(int browserId)
+        {
+            if (GetBrowser(browserId) is IChromiumWebBrowserInternal chromiumWebBrowser)
+            {
+                chromiumWebBrowser?.JsDialogHandler?.OnResetDialogState(chromiumWebBrowser);
+            }
+        }
     }
 }
