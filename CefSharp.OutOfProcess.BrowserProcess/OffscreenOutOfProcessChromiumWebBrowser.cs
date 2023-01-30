@@ -3,7 +3,7 @@ using System;
 using CefSharp.OutOfProcess.Interface;
 using CefSharp.Structs;
 using CefSharp.Enums;
-  
+
 namespace CefSharp.OutOfProcess.BrowserProcess
 {
     /// <summary>
@@ -42,8 +42,8 @@ namespace CefSharp.OutOfProcess.BrowserProcess
         /// <returns>ScreenInfo containing the current DPI scale factor</returns>
         protected virtual ScreenInfo? GetScreenInfo()
         {
-            CefSharp.Structs.Rect rect;
-            CefSharp.Structs.Rect availableRect;
+            CefSharp.Structs.Rect rect = new CefSharp.Structs.Rect();
+            CefSharp.Structs.Rect availableRect = new CefSharp.Structs.Rect();
 
             if (DpiScaleFactor > 1.0)
             {
