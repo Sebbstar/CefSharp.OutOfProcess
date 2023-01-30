@@ -5,7 +5,7 @@
     <TargetFrameworks>netcoreapp3.1;net462</TargetFrameworks>
     <RootNamespace>CefSharp.OutOfProcess.Wpf.HwndHost.Example</RootNamespace>
     <StartupObject>CefSharp.OutOfProcess.Wpf.HwndHost.Example.App</StartupObject>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+	<PlatformTarget>AnyCPU</PlatformTarget>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
