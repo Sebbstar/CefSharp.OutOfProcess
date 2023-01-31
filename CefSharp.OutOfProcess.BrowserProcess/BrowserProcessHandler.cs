@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using CefSharp.OutOfProcess.Interface;
 using System.Threading.Tasks;
+using CefSharp.OutOfProcess.BrowserProcess.CallbackProxies;
+using CefSharp.OutOfProcess.Interface.Callbacks;
 
 namespace CefSharp.OutOfProcess.BrowserProcess
 {
@@ -38,6 +40,7 @@ namespace CefSharp.OutOfProcess.BrowserProcess
             var threadId = Kernel32.GetCurrentThreadId();
 
             _outOfProcessServer.NotifyContextInitialized(threadId, Cef.CefSharpVersion, Cef.CefVersion, Cef.ChromiumVersion);
+            _outOfProcessServer.FileDialogCallback += _outOfProcessServer_FileDialogCallback;
         }
 
         protected override void Dispose(bool disposing)
@@ -65,14 +68,22 @@ namespace CefSharp.OutOfProcess.BrowserProcess
             });
         }
 
+        private OutOfProcessChromiumWebBrowser GetBrowser(int id) => _browsers.FirstOrDefault(x => x.Id == id);
+
+        private void _outOfProcessServer_FileDialogCallback(object sender, FileDialogCallbackDetails e)
+        {
+            _ = CefThread.ExecuteOnUiThread(() =>
+            {
+                ((DialogHandlerProxy)GetBrowser(e.BrowserId).DialogHandler)?.Callback(e);
+                return true;
+            });
+        }
+
         Task IOutOfProcessClientRpc.SendDevToolsMessage(int browserId, string message)
         {
             return CefThread.ExecuteOnUiThread(() =>
             {
-                var browser = _browsers.FirstOrDefault(x => x.Id == browserId);
-
-                browser?.GetBrowserHost().SendDevToolsMessage(message);
-
+                GetBrowser(browserId).GetBrowserHost()?.SendDevToolsMessage(message);
                 return true;
             });
         }
@@ -113,16 +124,12 @@ namespace CefSharp.OutOfProcess.BrowserProcess
 
         void IOutOfProcessClientRpc.NotifyMoveOrResizeStarted(int browserId)
         {
-            var browser = _browsers.FirstOrDefault(x => x.Id == browserId);
-
-            browser?.GetBrowserHost().NotifyMoveOrResizeStarted();
+            GetBrowser(browserId).GetBrowserHost()?.NotifyMoveOrResizeStarted();
         }
 
         void IOutOfProcessClientRpc.SetFocus(int browserId, bool focus)
         {
-            var browser = _browsers.FirstOrDefault(x => x.Id == browserId);
-
-            browser?.GetBrowserHost().SetFocus(focus);
+            GetBrowser(browserId).GetBrowserHost()?.SetFocus(focus);
         }
     }
 }
