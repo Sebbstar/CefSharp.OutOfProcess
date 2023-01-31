@@ -3,6 +3,7 @@ using CefSharp.OutOfProcess.Interface;
 using CefSharp.Handler;
 using System.Linq;
 using CefSharp.OutOfProcess.Interface.Callbacks;
+using System;
 
 namespace CefSharp.OutOfProcess.BrowserProcess.CallbackProxies
 {
@@ -17,6 +18,16 @@ namespace CefSharp.OutOfProcess.BrowserProcess.CallbackProxies
 
         public void Callback(FileDialogCallbackDetails details)
         {
+            if (details == null)
+            {
+                throw new ArgumentNullException(nameof(details));
+            }
+
+            if (details.Files == null)
+            {
+                throw new ArgumentNullException(nameof(details.Files));
+            }
+
             var cb = GetCallback(details.CallbackId);
 
             if (details.Continue)

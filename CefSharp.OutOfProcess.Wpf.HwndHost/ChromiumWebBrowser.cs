@@ -1064,7 +1064,7 @@ namespace CefSharp.OutOfProcess.Wpf.HwndHost
             set { SetValue(WebBrowserProperty, value); }
         }
 
-        Handler.IDialogHandler IChromiumWebBrowser.DialogHandler { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        Handler.IDialogHandler IChromiumWebBrowser.DialogHandler { get; set; }
 
         /// <summary>
         /// The WebBrowser property
