@@ -121,6 +121,8 @@ namespace CefSharp.OutOfProcess.WinForms
         /// <inheritdoc/>
         public Frame MainFrame => _devToolsContext == null ? null : _devToolsContext.MainFrame;
 
+        Handler.IDownloadHandler IChromiumWebBrowser.DownloadHandler { get; set; }
+
         /// <inheritdoc/>
         protected override void OnHandleCreated(EventArgs e)
         {
