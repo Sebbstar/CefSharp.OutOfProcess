@@ -42,6 +42,7 @@ namespace CefSharp.OutOfProcess.BrowserProcess
             _outOfProcessServer.NotifyContextInitialized(threadId, Cef.CefSharpVersion, Cef.CefVersion, Cef.ChromiumVersion);
             _outOfProcessServer.BeforeDownloadCallback += _outOfProcessServer_BeforeDownloadCallback;
             _outOfProcessServer.DownloadCallback += _outOfProcessServer_DownloadCallback;
+            _outOfProcessServer.JsDialogCallback += _outOfProcessServer_JsDialogCallback;
         }
 
         private void _outOfProcessServer_DownloadCallback(object sender, DownloadCallbackDetails e)
@@ -52,6 +53,11 @@ namespace CefSharp.OutOfProcess.BrowserProcess
         private void _outOfProcessServer_BeforeDownloadCallback(object sender, BeforeDownloadCallbackDetails e)
         {
             ((DownloadHandlerProxy)GetBrowser(e.BrowserId).DownloadHandler)?.BeforeDownloadCallback(e);
+        }
+
+        private void _outOfProcessServer_JsDialogCallback(object sender, JsDialogCallbackDetails e)
+        {
+            ((JsDialogHandlerProxy)GetBrowser(e.BrowserId).JsDialogHandler)?.Callback(e);
         }
 
         private OutOfProcessChromiumWebBrowser GetBrowser(int id) => _browsers.FirstOrDefault(x => x.Id == id);

@@ -205,5 +205,7 @@ namespace CefSharp.OutOfProcess
         Task<Response> GoForwardAsync(NavigationOptions options = null);
 
         Handler.IDownloadHandler DownloadHandler { get; set; }
+
+        Handler.IJsDialogHandler JsDialogHandler { get; set; }
     }
 }

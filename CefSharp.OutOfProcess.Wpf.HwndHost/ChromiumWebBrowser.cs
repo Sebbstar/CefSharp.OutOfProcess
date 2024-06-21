@@ -1066,6 +1066,9 @@ namespace CefSharp.OutOfProcess.Wpf.HwndHost
 
         Handler.IDownloadHandler IChromiumWebBrowser.DownloadHandler { get; set; }
 
+
+        Handler.IJsDialogHandler IChromiumWebBrowser.JsDialogHandler { get; set; }
+
         /// <summary>
         /// The WebBrowser property
         /// </summary>

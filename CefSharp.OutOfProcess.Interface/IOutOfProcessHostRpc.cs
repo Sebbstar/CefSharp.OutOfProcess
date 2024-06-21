@@ -89,5 +89,14 @@ namespace CefSharp.OutOfProcess.Interface
 
         event EventHandler<BeforeDownloadCallbackDetails> BeforeDownloadCallback;
         event EventHandler<DownloadCallbackDetails> DownloadCallback;
+        event EventHandler<JsDialogCallbackDetails> JsDialogCallback;
+
+        bool OnBeforeUnloadDialog(int browserId, string messageText, bool isReload, int callback);
+
+        void OnDialogClosed(int browserId);
+
+        bool OnJSDialog(int browserId, string originUrl, CefJsDialogType dialogType, string messageText, string defaultPromptText, int callback, ref bool suppressMessage);
+
+        void OnResetDialogState(int browserId);
     }
 }

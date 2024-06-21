@@ -123,6 +123,8 @@ namespace CefSharp.OutOfProcess.WinForms
 
         Handler.IDownloadHandler IChromiumWebBrowser.DownloadHandler { get; set; }
 
+        Handler.IJsDialogHandler IChromiumWebBrowser.JsDialogHandler { get; set; }
+
         /// <inheritdoc/>
         protected override void OnHandleCreated(EventArgs e)
         {
